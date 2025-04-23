@@ -1,3 +1,4 @@
+import re
 from flask import Flask, render_template, request, redirect, session, url_for, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -18,30 +19,53 @@ def init_db():
                             )''')
 init_db()
 
+# Email and Password Validation Regex
+EMAIL_REGEX = r"(^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$)"
+PASSWORD_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$'
+
 # Home redirects to login
 @app.route('/')
 def home():
     return redirect(url_for('login'))
 
 # Sign Up
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
+
+        # Validate email format using regex
+        if not re.match(EMAIL_REGEX, email):
+            flash('Invalid email format. Please enter a valid email (e.g., example@example.com).')
+            return redirect(url_for('signup'))
+
+        # Validate password strength using regex
+        if not re.match(PASSWORD_REGEX, password):
+            flash('Password must be at least 8 characters long and contain letters, numbers, and a special character (e.g., @, $, %, *).')
+            return redirect(url_for('signup'))
+
+        # Ensure both email and password are not empty
         if not email or not password:
             flash('Please fill all fields.')
             return redirect(url_for('signup'))
+        
+        # Hash the password for security
         hashed_pw = generate_password_hash(password)
+        
+        # Try to insert into the database
         try:
             with sqlite3.connect('database.db') as conn:
                 conn.execute("INSERT INTO users (email, password) VALUES (?, ?)", (email, hashed_pw))
                 flash('Account created successfully!')
                 return redirect(url_for('login'))
         except sqlite3.IntegrityError:
-            flash('Email already registered.')
+            flash('Email already registered. Please use a different email.')
             return redirect(url_for('signup'))
+    
     return render_template('signup.html')
+
 
 # Login
 @app.route('/login', methods=['GET', 'POST'])
@@ -73,7 +97,4 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    import os
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
-
+    app.run(debug=True)
