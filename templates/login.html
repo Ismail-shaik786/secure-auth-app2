@@ -2,10 +2,9 @@
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-<div class="container">
+<div>
     <h2>Login</h2>
     <form method="POST">
         <input type="email" name="email" placeholder="Email" required>
@@ -14,7 +13,7 @@
     </form>
     <p><a href="/signup">Don't have an account? Sign up</a></p>
     {% with messages = get_flashed_messages() %}
-      {% if messages %}<div class="message">{{ messages[0] }}</div>{% endif %}
+      {% if messages %}<div>{{ messages[0] }}</div>{% endif %}
     {% endwith %}
 </div>
 </body>
