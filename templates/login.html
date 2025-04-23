@@ -2,9 +2,11 @@
 <html>
 <head>
     <title>Login</title>
+    <!-- Link to the CSS file using url_for -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div>
+<div class="container">
     <h2>Login</h2>
     <form method="POST">
         <input type="email" name="email" placeholder="Email" required>
@@ -13,7 +15,9 @@
     </form>
     <p><a href="/signup">Don't have an account? Sign up</a></p>
     {% with messages = get_flashed_messages() %}
-      {% if messages %}<div>{{ messages[0] }}</div>{% endif %}
+        {% if messages %}
+            <div class="message">{{ messages[0] }}</div>
+        {% endif %}
     {% endwith %}
 </div>
 </body>
