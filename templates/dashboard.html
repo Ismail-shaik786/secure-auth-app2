@@ -2,9 +2,11 @@
 <html>
 <head>
     <title>Dashboard</title>
+    <!-- Link CSS file using url_for() to ensure Flask serves it -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<div>
+<div class="container">
     <h2>Welcome, {{ user }}</h2>
     <p>You are logged in securely.</p>
     <a href="/logout">Logout</a>
